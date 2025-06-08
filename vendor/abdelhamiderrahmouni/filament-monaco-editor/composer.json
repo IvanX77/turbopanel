@@ -1,0 +1,82 @@
+{
+    "name": "abdelhamiderrahmouni/filament-monaco-editor",
+    "description": "A monaco editor form field for filamentphp.",
+    "keywords": [
+        "Abdelhamid Errahmouni",
+        "laravel",
+        "filament monaco code editor",
+        "filament monaco editor",
+        "monaco editor",
+        "code editor",
+        "monaco",
+        "filamentphp",
+        "php"
+    ],
+    "homepage": "https://github.com/abdelhamiderrahmouni/filament-monaco-editor",
+    "support": {
+        "issues": "https://github.com/abdelhamiderrahmouni/filament-monaco-editor/issues",
+        "source": "https://github.com/abdelhamiderrahmouni/filament-monaco-editor"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Abdelhamid Errahmouni",
+            "email": "abdelhamid.errahmouni@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "filament/forms": "^3.0",
+        "spatie/laravel-package-tools": "^1.15.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^7.9",
+        "nunomaduro/larastan": "^2.0.1",
+        "orchestra/testbench": "^8.0",
+        "pestphp/pest": "^2.1",
+        "pestphp/pest-plugin-arch": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "spatie/laravel-ray": "^1.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "AbdelhamidErrahmouni\\FilamentMonacoEditor\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AbdelhamidErrahmouni\\FilamentMonacoEditor\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AbdelhamidErrahmouni\\FilamentMonacoEditor\\MonacoEditorServiceProvider"
+            ],
+            "aliases": {
+                "MonacoEditor": "AbdelhamidErrahmouni\\FilamentMonacoEditor\\Facades\\MonacoEditor"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
