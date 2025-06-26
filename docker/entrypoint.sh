@@ -6,24 +6,24 @@ if [ -f /var/www/html/.env ]; then
 else
   echo "external vars don't exist."
   # webroot .env is symlinked to this path
-  touch /pelican-data/.env
+  touch /turbopanel-data/.env
 
   ## manually generate a key because key generate --force fails
   if [ -z $APP_KEY ]; then
      echo -e "Generating key."
      APP_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
      echo -e "Generated app key: $APP_KEY"
-     echo -e "APP_KEY=$APP_KEY" > /pelican-data/.env
+     echo -e "APP_KEY=$APP_KEY" > /turbopanel-data/.env
   else
     echo -e "APP_KEY exists in environment, using that."
-    echo -e "APP_KEY=$APP_KEY" > /pelican-data/.env
+    echo -e "APP_KEY=$APP_KEY" > /turbopanel-data/.env
   fi
 
   ## enable installer
-  echo -e "APP_INSTALLED=false" >> /pelican-data/.env
+  echo -e "APP_INSTALLED=false" >> /turbopanel-data/.env
 fi
 
-mkdir -p /pelican-data/database /pelican-data/storage/avatars /pelican-data/storage/fonts /var/www/html/storage/logs/supervisord 2>/dev/null
+mkdir -p /turbopanel-data/database /turbopanel-data/storage/avatars /turbopanel-data/storage/fonts /var/www/html/storage/logs/supervisord 2>/dev/null
 
 if ! grep -q "APP_KEY=" .env || grep -q "APP_KEY=$" .env; then
   echo "Generating APP_KEY..."
