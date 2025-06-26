@@ -1,7 +1,7 @@
 x-common:
   panel:
     &panel-environment
-    APP_URL: "https://localhost" # can be set to 'http://localhost' on port 80 only
+    APP_URL: "http://localhost" # kann angepasst werden z.B. http://deine-domain.de
     ADMIN_EMAIL: "USEYOUROWNEMAILHERE@example.com"
 
     APP_DEBUG: "false"
@@ -17,17 +17,9 @@ x-common:
     # MAIL_PASSWORD: ""
     # MAIL_SCHEME: ""
 
-#
-# ------------------------------------------------------------------------------------------
-# DANGER ZONE BELOW
-#
-# The remainder of this file likely does not need to be changed. Please only make modifications
-# below if you understand what you are doing.
-#
-
 services:
   panel:
-    image: ghcr.io/pelican-dev/panel:latest
+    image: ghcr.io/ivanx77/turbopanel:latest
     build: .
     restart: always
     networks:
@@ -35,20 +27,20 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      # - "9000:9000" # enable when not using caddy to be able to reach php-fpm
+      # - "9000:9000" # wenn du php-fpm direkt brauchst
     extra_hosts:
-      - "host.docker.internal:host-gateway" # shows the panel on the internal docker network as well. usually '172.17.0.1'
+      - "host.docker.internal:host-gateway"
     volumes:
-      - pelican-data:/pelican-data
-      - pelican-logs:/var/www/html/storage/logs
+      - turbopanel-data:/turbopanel-data
+      - turbopanel-logs:/var/www/html/storage/logs
     environment:
       <<: [*panel-environment, *mail-environment]
-      XDG_DATA_HOME: /pelican-data
-      # SKIP_CADDY: true # enable when not using caddy.
+      XDG_DATA_HOME: /turbopanel-data
+      # SKIP_CADDY: true # falls kein Caddy benutzt wird
 
 volumes:
-  pelican-data:
-  pelican-logs:
+  turbopanel-data:
+  turbopanel-logs:
 
 networks:
   default:
