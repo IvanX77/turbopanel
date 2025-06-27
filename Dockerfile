@@ -2,13 +2,14 @@ FROM php:8.3-fpm-alpine AS composer
 
 WORKDIR /build
 
-# Fehlende PHP-Extensions installieren
+# System-Abhängigkeiten + PHP Extensions
 RUN apk add --no-cache \
-    git unzip curl libpng-dev libxml2-dev libzip-dev oniguruma-dev autoconf g++ make icu-dev \
+    git unzip curl libpng-dev libxml2-dev libzip-dev oniguruma-dev icu-dev autoconf g++ make \
     && docker-php-ext-install intl bcmath zip pdo pdo_mysql
 
-# Composer installieren
+# Composer direkt installieren
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
 COPY composer.json composer.lock ./
 
 RUN composer install --no-dev --no-interaction --no-autoloader --no-scripts
@@ -31,7 +32,6 @@ RUN yarn run build
 FROM php:8.3-fpm-alpine AS final
 WORKDIR /var/www/html
 
-# PHP-Extensions für die Runtime auch im finalen Image installieren
 RUN apk add --no-cache \
     caddy ca-certificates supervisor supercronic curl icu-dev \
     && docker-php-ext-install intl bcmath zip pdo pdo_mysql
