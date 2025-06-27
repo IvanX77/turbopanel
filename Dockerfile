@@ -1,17 +1,17 @@
-FROM php:8.3-fpm-alpine AS composer
+FROM php:8.3-fpm-alpine AS php-base
 
 WORKDIR /build
 
-# System-Abhängigkeiten + PHP Extensions
+# PHP Extensions installieren
 RUN apk add --no-cache \
     git unzip curl libpng-dev libxml2-dev libzip-dev oniguruma-dev icu-dev autoconf g++ make \
     && docker-php-ext-install intl bcmath zip pdo pdo_mysql
 
-# Composer direkt installieren
+# Composer installieren
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
+# Abhängigkeiten installieren
 COPY composer.json composer.lock ./
-
 RUN composer install --no-dev --no-interaction --no-autoloader --no-scripts
 
 FROM node:20-alpine AS yarn
@@ -19,19 +19,20 @@ WORKDIR /build
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-FROM composer AS composerbuild
+FROM php-base AS composerbuild
 COPY . .
 RUN composer dump-autoload --optimize
 
 FROM yarn AS yarnbuild
 WORKDIR /build
 COPY . .
-COPY --from=composer /build .
+COPY --from=php-base /build .
 RUN yarn run build
 
 FROM php:8.3-fpm-alpine AS final
 WORKDIR /var/www/html
 
+# Wieder PHP Extensions im finalen Image
 RUN apk add --no-cache \
     caddy ca-certificates supervisor supercronic curl icu-dev \
     && docker-php-ext-install intl bcmath zip pdo pdo_mysql
