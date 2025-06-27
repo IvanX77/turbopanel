@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine AS composer
+FROM composer:latest AS composer
 
 WORKDIR /build
 
