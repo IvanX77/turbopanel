@@ -8,6 +8,8 @@ FROM php:8.3-fpm-alpine AS composer
 
 WORKDIR /build
 
+RUN apk add --no-cache git unzip curl libpng-dev libxml2-dev libzip-dev oniguruma-dev autoconf g++ make
+
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 COPY composer.json composer.lock ./
 
@@ -20,9 +22,8 @@ FROM node:20-alpine AS yarn
 
 WORKDIR /build
 COPY package.json yarn.lock ./
-
 RUN yarn config set network-timeout 300000 \
-    && yarn install --frozen-lockfile
+  && yarn install --frozen-lockfile
 
 # ================================
 # Stage 2-1: Composer Optimize
@@ -48,13 +49,13 @@ FROM php:8.3-fpm-alpine AS final
 
 WORKDIR /var/www/html
 
-RUN apk update && apk add --no-cache \
-    caddy ca-certificates supervisor supercronic curl
+RUN apk add --no-cache caddy ca-certificates supervisor supercronic curl bash
 
+# Kopiere den Build von vorherigen Stages
 COPY --chown=root:www-data --chmod=640 --from=composerbuild /build .
 COPY --chown=root:www-data --chmod=640 --from=yarnbuild /build/public ./public
 
-# Set permissions & symlinks
+# Symlinks und Rechte setzen
 RUN chown root:www-data ./ \
     && chmod 750 ./ \
     && find ./ -type d -exec chmod 750 {} \; \
@@ -67,6 +68,7 @@ RUN chown root:www-data ./ \
     && chown -R www-data:www-data /turbopanel-data ./storage ./bootstrap/cache /var/run/supervisord /var/www/html/public/storage \
     && chmod -R u+rwX,g+rwX,o-rwx /turbopanel-data ./storage ./bootstrap/cache /var/run/supervisord
 
+# Konfigurationen kopieren
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/Caddyfile /etc/caddy/Caddyfile
 COPY docker/crontab /etc/supercronic/crontab
@@ -76,6 +78,7 @@ HEALTHCHECK --interval=5m --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost/up || exit 1
 
 EXPOSE 80 443
+
 VOLUME /turbopanel-data
 
 USER www-data
