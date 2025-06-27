@@ -16,6 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: List repo files
+        run: ls -la
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
